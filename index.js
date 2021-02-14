@@ -33,18 +33,24 @@ fs.readdir(directoryInputPath, function (err, fileNames) {
   const taskFileNames = fileNames.filter((m) => m.endsWith(".task"));
   // Loop trough each filenames
   taskFileNames.forEach(function (fileName, i) {
-    // readfile
     const index = startIndex + i;
     const paddedIndex = padWithZeroes(index, 3);
     fs.readFile(path.join(directoryInputPath, fileName), "utf8", function (err, content) {
+      // Replace content
       content = content.replace(METADATA_ID_REGEX, `$1task-${paddedIndex}`);
       content = content.replace(METADATA_NAME_REGEX, `$1Task ${index}`);
+
+      // Write File
       fs.writeFileSync(path.join(directoryOutputPath, `task-${paddedIndex}.task`), content);
     });
-    i++;
   });
 });
 
+/**
+ * Pads a given number with zeroes until the given length
+ * @param {*} number
+ * @param {*} length
+ */
 function padWithZeroes(number, length) {
   var my_string = "" + number;
   while (my_string.length < length) {
