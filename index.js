@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const { start } = require("repl");
 
 // Consts
 const METADATA_ID_REGEX = /(id:\s)(.+)/;
@@ -34,7 +35,7 @@ fs.readdir(directoryInputPath, function (err, fileNames) {
   // Loop trough each filenames
   taskFileNames.forEach(function (fileName, i) {
     const index = startIndex + i;
-    const paddedIndex = padWithZeroes(index, 3);
+    const paddedIndex = padWithZeroes(index);
     fs.readFile(path.join(directoryInputPath, fileName), "utf8", function (err, content) {
       // Replace content
       content = content.replace(METADATA_ID_REGEX, `$1task-${paddedIndex}`);
@@ -44,6 +45,9 @@ fs.readdir(directoryInputPath, function (err, fileNames) {
       fs.writeFileSync(path.join(directoryOutputPath, `task-${paddedIndex}.task`), content);
     });
   });
+
+  const progressionArray = "[" + taskFileNames.map((el, i) => `"${padWithZeroes(startIndex + i)}"`).join(", ") + "]";
+  console.log(`New Progression Array: ${progressionArray}`);
 });
 
 /**
@@ -51,7 +55,7 @@ fs.readdir(directoryInputPath, function (err, fileNames) {
  * @param {*} number
  * @param {*} length
  */
-function padWithZeroes(number, length) {
+function padWithZeroes(number, length = 3) {
   var my_string = "" + number;
   while (my_string.length < length) {
     my_string = "0" + my_string;
